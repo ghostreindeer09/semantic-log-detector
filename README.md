@@ -54,12 +54,11 @@ pip install -r requirements.txt
 <h2>Screenshots</h2>
 <p>Example screenshots of the system in action:</p>
 <ul>
-  <li><img src="<img width="1470" height="845" alt="Screenshot 2026-02-03 at 15 18 23" src="https://github.com/user-attachments/assets/7d966886-894a-4db5-9d53-842b2854a00e" />
-" width="600"></li>
-  <li><img src="<img width="1466" height="843" alt="Screenshot 2026-02-03 at 15 18 36" src="https://github.com/user-attachments/assets/fddf3ce8-1a2e-440d-bc60-4e54b4eced8d" />
-" alt="Log Embedding Visualization" width="600"></li>
-  <li><img src="<img width="1468" height="846" alt="Screenshot 2026-02-03 at 15 18 51" src="https://github.com/user-attachments/assets/21b6f140-7086-425e-bad6-a59a798b622f" />
-" alt="Anomaly Alert Example" width="600"></li>
+  <img width="1470" height="845" alt="Screenshot 2026-02-03 at 15 18 23" src="https://github.com/user-attachments/assets/173e415f-97a0-4177-85c7-ef714632da35" />
+  <img width="1466" height="843" alt="Screenshot 2026-02-03 at 15 18 36" src="https://github.com/user-attachments/assets/3aa50c20-899e-4cbc-933d-ca5478693da1" />
+  <img width="1468" height="846" alt="Screenshot 2026-02-03 at 15 18 51" src="https://github.com/user-attachments/assets/6a33b9e9-1273-4753-acf9-22fa0eb8df56" />
+
+
 </ul>
 
 <h2>Future Improvements</h2>
