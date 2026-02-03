@@ -1,0 +1,46 @@
+# Semantic Log Anomaly Detection Configuration
+
+# Model Configuration
+model:
+  encoder: "all-MiniLM-L6-v2"  # Sentence-BERT model
+  embedding_dim: 384
+  batch_size: 32
+  device: "cpu"  # or "cuda" for GPU
+
+# Vector Database Configuration
+vector_db:
+  index_type: "Flat"  # Flat for exact search (stable), IVF for approximate
+  nlist: 100  # Number of clusters for IVF
+  nprobe: 10  # Number of clusters to search
+  metric: "L2"  # L2 or IP (Inner Product)
+
+# Anomaly Detection Configuration
+anomaly:
+  k_neighbors: 5  # Number of neighbors for k-NN
+  threshold_percentile: 95  # Percentile for anomaly threshold
+  min_distance_threshold: 0.5  # Minimum distance to be considered anomaly
+  
+# Time-Aware Module Configuration
+time_aware:
+  window_size: 100  # Sliding window size
+  temporal_weight: 0.3  # Weight for temporal features
+  decay_factor: 0.95  # Exponential decay for older logs
+
+# Preprocessing Configuration
+preprocessing:
+  max_log_length: 512
+  remove_timestamps: true
+  remove_ips: true
+  remove_paths: false
+  lowercase: true
+  
+# Dashboard Configuration
+dashboard:
+  host: "0.0.0.0"
+  port: 5000
+  debug: true
+  
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
