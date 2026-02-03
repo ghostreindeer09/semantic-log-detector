@@ -1,176 +1,80 @@
-# Semantic Log Anomaly Detection
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Semantic Log Detector</title>
+</head>
+<body>
 
-A machine learning system for detecting anomalies in log data using semantic embeddings (Sentence-BERT), Isolation Forest, and k-NN similarity search.
+<h1>Semantic Log Detector</h1>
 
-## 🎯 Performance
+<p>
+A real‑time semantic log anomaly detection system that identifies suspicious or malicious log events using machine learning. Instead of simple text matching, it uses semantic embeddings to understand the meaning of log messages and detect unusual patterns.
+</p>
 
-Trained on the [Advanced SIEM Dataset](https://huggingface.co/datasets/darkknight25/Advanced_SIEM_Dataset):
+<h2>Features</h2>
+<ul>
+  <li>Semantic log understanding using <strong>Sentence‑BERT</strong> embeddings</li>
+  <li>Real‑time anomaly detection</li>
+  <li>Efficient similarity search with <strong>Milvus</strong> or <strong>FAISS</strong></li>
+  <li>Time‑aware scoring to detect sequential anomalies</li>
+  <li>Human‑readable explanations of anomalies</li>
+  <li>Promising performance on SIEM‑style datasets:
+    <ul>
+      <li>True Positive Rate: 100%</li>
+      <li>True Negative Rate: 92%</li>
+      <li>Overall Accuracy: 96%</li>
+    </ul>
+  </li>
+</ul>
 
-| Metric | Score |
-|--------|-------|
-| **True Negative Rate** | 92% |
-| **True Positive Rate** | 100% |
-| **Overall Accuracy** | 96% |
+<h2>Prerequisites</h2>
+<ul>
+  <li>Python 3.10+</li>
+  <li>PyTorch</li>
+  <li>sentence‑transformers</li>
+  <li>Milvus or FAISS</li>
+  <li>scikit‑learn, pandas, numpy</li>
+  <li>Optional: Kafka / Google Pub/Sub for streaming logs</li>
+</ul>
 
-## 🏗️ Architecture
-
-```
-Log Source → Log Ingestion → Preprocessor → Encoder (Sentence-BERT)
-                                               ↓
-                                      Feature Extraction
-                                     (Semantic + Metadata)
-                                               ↓
-                              ┌────────────────┴────────────────┐
-                              ↓                                  ↓
-                     k-NN Similarity                    Isolation Forest
-                              ↓                                  ↓
-                              └────────────────┬────────────────┘
-                                               ↓
-                                      Anomaly Scorer
-                                               ↓
-                                    Explanation Engine
-                                               ↓
-                                   Alerting & Dashboard
-```
-
-## 🚀 Quick Start
-
-### 1. Install Dependencies
-
-```bash
-cd semantic-log-anomaly-detection
+<h2>Installation</h2>
+<pre>
+git clone https://github.com/ghostreindeer09/semantic-log-detector.git
+cd semantic-log-detector
 pip install -r requirements.txt
-```
+</pre>
 
-### 2. Train on SIEM Dataset
+<h2>Datasets</h2>
+<ul>
+  <li><a href="https://github.com/logpai/loghub">HDFS Logs</a></li>
+  <li><a href="https://github.com/logpai/loghub">BGL Logs</a></li>
+  <li><a href="https://huggingface.co/datasets/darkknight25/Advanced_SIEM_Dataset">SIEM‑style Dataset on Hugging Face</a></li>
+</ul>
 
-```bash
-python train_siem.py
-```
+<h2>Screenshots</h2>
+<p>Example screenshots of the system in action:</p>
+<ul>
+  <li><img src="<img width="1470" height="845" alt="Screenshot 2026-02-03 at 15 18 23" src="https://github.com/user-attachments/assets/7d966886-894a-4db5-9d53-842b2854a00e" />
+" width="600"></li>
+  <li><img src="<img width="1466" height="843" alt="Screenshot 2026-02-03 at 15 18 36" src="https://github.com/user-attachments/assets/fddf3ce8-1a2e-440d-bc60-4e54b4eced8d" />
+" alt="Log Embedding Visualization" width="600"></li>
+  <li><img src="<img width="1468" height="846" alt="Screenshot 2026-02-03 at 15 18 51" src="https://github.com/user-attachments/assets/21b6f140-7086-425e-bad6-a59a798b622f" />
+" alt="Anomaly Alert Example" width="600"></li>
+</ul>
 
-This will:
-- Download the Advanced SIEM Dataset from Hugging Face
-- Train the model on normal logs
-- Evaluate on both normal and anomalous logs
-- Show sample detections with explanations
+<h2>Future Improvements</h2>
+<ul>
+  <li>Reduce false positives by refining thresholds and temporal modeling</li>
+  <li>Add support for more log sources (cloud, IoT, containers)</li>
+  <li>Integration with real‑time monitoring and alerting systems</li>
+  <li>Hosted deployment using Vertex AI or similar platforms</li>
+</ul>
 
-### 3. Run the Demo (Optional)
+<h2>License</h2>
+<p>This project is licensed under the MIT License — see the <a href="LICENSE">LICENSE</a> file for details.</p>
 
-```bash
-python demo.py
-```
+<h2>Contact</h2>
+<p>For contributions or questions, reach out to <strong>ghostreindeer09</strong> or open an issue on this repository.</p>
 
-### 4. Start the Dashboard (Optional)
-
-```bash
-python -m dashboard.app
-# Open http://localhost:5000
-```
-
-## 📁 Project Structure
-
-```
-semantic-log-anomaly-detection/
-├── config/
-│   └── config.yaml          # Configuration file
-├── src/
-│   ├── preprocessor.py      # Log parsing and normalization
-│   ├── encoder.py           # Sentence-BERT embeddings
-│   ├── vector_db.py         # FAISS vector storage
-│   ├── similarity_search.py # k-NN similarity search
-│   ├── anomaly_scorer.py    # Distance-based scoring
-│   ├── explanation_engine.py # Human-readable explanations
-│   ├── time_aware.py        # Temporal context handling
-│   └── pipeline.py          # Main orchestration
-├── data/
-│   ├── siem_dataset.py      # HuggingFace SIEM dataset loader
-│   └── log_generator.py     # Sample data generator
-├── dashboard/
-│   ├── app.py               # Flask API
-│   └── templates/
-│       └── index.html       # Dashboard UI
-├── train_siem.py            # Training script for SIEM dataset
-├── demo.py                  # Demo with synthetic data
-└── requirements.txt         # Dependencies
-```
-
-## 🔧 How It Works
-
-### 1. Preprocessing
-- Parses raw logs and extracts structured information
-- Normalizes timestamps, IPs, and paths
-- Cleans text for embedding generation
-
-### 2. Feature Extraction
-- **Semantic Features**: Sentence-BERT embeddings (384 dimensions)
-- **Metadata Features**: Risk score, severity level
-
-### 3. Anomaly Detection (Hybrid Approach)
-- **k-NN Distance**: Measures semantic distance from normal logs
-- **Isolation Forest**: Detects statistical outliers
-- **Combined Score**: Weighted combination of both methods
-
-### 4. Explanation Engine
-- Generates human-readable explanations
-- Provides severity levels and recommendations
-- Shows similar normal logs for context
-
-## 📊 Dataset
-
-The model is trained on the [Advanced SIEM Dataset](https://huggingface.co/datasets/darkknight25/Advanced_SIEM_Dataset) which contains:
-
-- 8 event types: firewall, ids_alert, auth, endpoint, network, cloud, iot, ai
-- 6 severity levels: info, low, medium, high, critical, emergency
-- CEF-formatted raw logs
-- MITRE ATT&CK technique references
-- Behavioral analytics for ~10% of records
-
-## ⚙️ Configuration
-
-Edit `config/config.yaml` to customize:
-
-```yaml
-model:
-  encoder: "all-MiniLM-L6-v2"
-  embedding_dim: 384
-  device: "cpu"  # or "cuda" for GPU
-
-anomaly:
-  k_neighbors: 5
-  threshold_percentile: 95
-```
-
-## 📝 API Usage
-
-```python
-from train_siem import HybridAnomalyPipeline
-from data.siem_dataset import SIEMDataLoader
-
-# Load and prepare data
-loader = SIEMDataLoader(max_samples=3000)
-loader.load()
-normal_logs, anomaly_logs, normal_ids, anomaly_ids = loader.split_normal_anomaly()
-
-# Initialize and train
-pipeline = HybridAnomalyPipeline(k_neighbors=5)
-pipeline.fit(normal_logs, normal_ids, loader.get_metadata())
-
-# Detect anomalies
-result = pipeline.detect(suspicious_log, metadata)
-print(f"Score: {result['score']:.2%}")
-print(f"Is Anomaly: {result['is_anomaly']}")
-```
-
-## 🔬 Model Details
-
-| Component | Implementation |
-|-----------|----------------|
-| Encoder | Sentence-BERT (all-MiniLM-L6-v2) |
-| Embedding Dim | 384 |
-| k-NN | sklearn NearestNeighbors |
-| Outlier Detection | Isolation Forest (100 trees) |
-| Contamination | 10% |
-
-## 📝 License
-
-MIT License
+</body>
+</html>
