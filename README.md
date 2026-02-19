@@ -182,7 +182,7 @@ python scripts/load_test.py
 
 ## 👨‍💻 Authors
 
-Rishit Sharma,Kokkula Srinivas
+Rishit Sharma, Kokkula Srinivas
 Detection Engineering | ML for Cyber Defense
 
 ---
