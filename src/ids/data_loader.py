@@ -135,13 +135,15 @@ def load_raw_data(config: Dict[str, Any]) -> pd.DataFrame:
         logger.info("Loading %s ...", os.path.basename(fpath))
         df = pd.read_csv(fpath, encoding=encoding, low_memory=False)
         df = _normalize_columns(df)
+        # Track source file for chronological splitting
+        df["source_file"] = os.path.basename(fpath)
         dfs.append(df)
         file_names.append(os.path.basename(fpath))
         logger.info("  -> %d rows, %d cols", len(df), len(df.columns))
 
     _validate_schema(dfs, file_names)
 
-    # Concatenate using common columns
+    # Concatenate using common columns (source_file is always present)
     common_cols = set(dfs[0].columns)
     for df in dfs[1:]:
         common_cols &= set(df.columns)
@@ -223,8 +225,12 @@ def create_labels(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def identify_features(df: pd.DataFrame) -> List[str]:
-    """Identify structured flow feature columns (exclude labels and non-numeric)."""
-    exclude_cols = {"label", "label_binary", "label_multiclass", "label_multiclass_encoded"}
+    """Identify structured flow feature columns (exclude labels, metadata, and non-numeric)."""
+    exclude_cols = {
+        "label", "label_binary", "label_multiclass", "label_multiclass_encoded",
+        # Metadata columns preserved for chronological splitting / provenance
+        "capture_day", "day_index", "source_file", "timestamp",
+    }
     feature_cols = [
         c for c in df.columns
         if c not in exclude_cols and pd.api.types.is_numeric_dtype(df[c])

@@ -1,90 +1,121 @@
-# Virtual environments
-.venv/
-venv/
-env/
-ENV/
-
-# Python cache
+# =========================
+# Python
+# =========================
 __pycache__/
 *.py[cod]
 *$py.class
-*.pyo
-*.pyd
 
-# Distribution / packaging
-dist/
-build/
-*.egg-info/
-*.egg
-wheels/
-pip-wheel-metadata/
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
 
-# IDE / Editor
-.idea/
+# =========================
+# IDE
+# =========================
 .vscode/
+.idea/
 *.swp
 *.swo
-*~
-.project
-.pydevproject
-.settings/
 
-# Jupyter notebooks
-.ipynb_checkpoints/
-
-# Model files (large binary files)
-*.pt
-*.pth
-*.onnx
-*.bin
-*.safetensors
-saved_models/
-
-# FAISS index files
-*.index
-
-# HuggingFace cache
-.cache/
-~/.cache/huggingface/
-
-# Large data files
-Datasets/
-*.parquet
-
-# Model checkpoints and pickles
-outputs/checkpoints/*.pkl
-outputs/checkpoints/tokenizer/
-
-# Logs
-*.log
-logs/
-
-# OS files
+# =========================
+# OS Files
+# =========================
 .DS_Store
 Thumbs.db
 
-# Environment variables
-.env
-.env.local
-*.env
+# =========================
+# Jupyter
+# =========================
+.ipynb_checkpoints/
 
+# =========================
+# Environment Variables
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+
+# =========================
 # Testing
+# =========================
 .pytest_cache/
 .coverage
 htmlcov/
-.tox/
+.cache/
 
-# MyPy
-.mypy_cache/
+# =========================
+# Build Artifacts
+# =========================
+build/
+dist/
+*.egg-info/
 
-# Misc
-*.bak
-*.tmp
+# =========================
+# Model Artifacts
+# =========================
+models/checkpoints/
+models/trained/
+outputs/checkpoints/
+outputs/models/
+*.pt
+*.pth
+*.ckpt
+*.joblib
+*.pkl
+*.pickle
 
-# Project specific - keep processed metadata but not data
-data/processed/*.parquet
-!data/processed/metadata.json
+# =========================
+# Dataset Files
+# =========================
+Datasets/
 data/raw/
+data/interim/
 
-# Agent directories
-.agent/
+# Keep processed metadata if desired
+# !data/processed/metadata.json
+
+# =========================
+# Generated Reports
+# =========================
+outputs/reports/
+outputs/benchmark/
+outputs/metrics/
+
+# If you want example reports:
+# !outputs/reports/sample_report.md
+
+# =========================
+# Vector Databases
+# =========================
+faiss_index/
+chroma/
+chromadb/
+vector_store/
+*.faiss
+
+# =========================
+# Runtime Files
+# =========================
+*.pid
+*.sqlite
+*.db
+
+# =========================
+# Docker
+# =========================
+docker-compose.override.yml
+# Model artifacts
+outputs/**/checkpoints/
+*.pkl
+*.joblib
+*.pickle
+*.pt
+*.pth

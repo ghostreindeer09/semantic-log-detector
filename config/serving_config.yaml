@@ -1,0 +1,45 @@
+# ─────────────────────────────────────────────────────────────────────
+# Serving Configuration — AI-Augmented SOC Detection Engine
+# ─────────────────────────────────────────────────────────────────────
+# This config controls the API runtime, not training.
+# For training configuration, see config/ids_config.yaml.
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 2
+  log_level: "info"
+
+# ── Model paths ──
+models:
+  structured:
+    path: "outputs/checkpoints"        # LightGBM + scaler + meta
+    description: "CIC-IDS2017 structured IDS (LightGBM)"
+  semantic:
+    path: "models/siem_model"           # Sentence-BERT + IsoForest
+    description: "Semantic log anomaly (Sentence-BERT + IsolationForest)"
+
+# ── Input routing ──
+routing:
+  min_feature_threshold: 10            # Minimum recognized flow features to route to structured engine
+
+# ── Alert thresholds ──
+alerts:
+  threat_threshold: 0.5                # Minimum fused score to flag as threat
+  severity:
+    critical: 0.9
+    high: 0.7
+    medium: 0.5
+    low: 0.3
+
+# ── Score fusion ──
+fusion:
+  structured_weight: 0.70
+  semantic_weight: 0.30
+  structured_high_conf_override: 0.95
+  semantic_high_conf_override: 0.90
+
+# ── Drift monitoring ──
+drift:
+  window_size: 100
+  z_threshold: 3.0

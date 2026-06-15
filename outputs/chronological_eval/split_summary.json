@@ -1,0 +1,51 @@
+{
+  "strategy": "chronological_day_split",
+  "train": {
+    "rows": 1535621,
+    "days": [
+      "Monday",
+      "Tuesday",
+      "Wednesday"
+    ],
+    "class_distribution": {
+      "BENIGN": 1332710,
+      "DoS": 193759,
+      "Brute Force": 9152
+    },
+    "binary_distribution": {
+      "benign": 1332710,
+      "attack": 202911
+    }
+  },
+  "validation": {
+    "rows": 417272,
+    "days": [
+      "Thursday"
+    ],
+    "class_distribution": {
+      "BENIGN": 415093,
+      "Web Attack": 2143,
+      "Infiltration": 36
+    },
+    "binary_distribution": {
+      "benign": 415093,
+      "attack": 2179
+    }
+  },
+  "test": {
+    "rows": 621371,
+    "days": [
+      "Friday"
+    ],
+    "class_distribution": {
+      "BENIGN": 400583,
+      "DDoS": 128016,
+      "PortScan": 90819,
+      "Bot": 1953
+    },
+    "binary_distribution": {
+      "benign": 400583,
+      "attack": 220788
+    }
+  }
+}

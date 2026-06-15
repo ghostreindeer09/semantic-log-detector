@@ -1,153 +1,219 @@
-import asyncio
-import time
-from typing import List, Optional, Dict
-from fastapi import FastAPI, BackgroundTasks, HTTPException
-from pydantic import BaseModel
-import logging
-from contextlib import asynccontextmanager
+"""
+AI-Augmented SOC Detection Engine — Unified API.
 
-from ..models.hybrid_model import HybridAnomalyPipeline
-from ..rules.engine import RuleEngine
+Serves both structured IDS (LightGBM on network flows) and semantic
+log analysis (Sentence-BERT + Isolation Forest) through a single
+API surface with shared alert schema and MITRE mapping.
+"""
+
+import asyncio
+import logging
+import time
+from contextlib import asynccontextmanager
+from typing import Dict, List, Optional
+
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
+from ..analyzers.semantic import SemanticAnalyzer
+from ..analyzers.structured import StructuredAnalyzer
+from ..core.alert_builder import AlertBuilder
+from ..core.router import InputRouter
+from ..core.schemas import (
+    AnalysisEngine,
+    AnalysisResult,
+    DetectionRequest,
+    SOCAlert,
+)
 from ..mitre.mapper import MitreMapper
 from ..monitoring.drift import DriftMonitor
+from ..rules.engine import RuleEngine
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# ------------------------------------------------------------------ #
+#  Logging                                                             #
+# ------------------------------------------------------------------ #
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
 logger = logging.getLogger("api")
 
-# Global instances
-pipeline: Optional[HybridAnomalyPipeline] = None
-rule_engine = RuleEngine()
-mitre_mapper = MitreMapper()
-drift_monitor = DriftMonitor()
+# ------------------------------------------------------------------ #
+#  Global state  (populated during lifespan)                           #
+# ------------------------------------------------------------------ #
 
-# Async Queue for streaming ingestion
-ingestion_queue = asyncio.Queue()
+structured_analyzer: Optional[StructuredAnalyzer] = None
+semantic_analyzer: Optional[SemanticAnalyzer] = None
+input_router: Optional[InputRouter] = None
+alert_builder: Optional[AlertBuilder] = None
+
+
+# ------------------------------------------------------------------ #
+#  Lifespan                                                            #
+# ------------------------------------------------------------------ #
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Load model on startup
-    global pipeline
-    model_path = "models/siem_model"
-    try:
-        pipeline = HybridAnomalyPipeline.load(model_path)
-        logger.info(f"Model loaded from {model_path}")
-    except Exception as e:
-        logger.warning(f"Could not load model from {model_path}: {e}. Starting with empty pipeline.")
-        pipeline = HybridAnomalyPipeline()
+    """Load models and initialise shared services on startup."""
+    global structured_analyzer, semantic_analyzer, input_router, alert_builder
 
-    # Start queue worker
-    worker_task = asyncio.create_task(process_queue())
-    
-    yield
-    
-    # Clean up
-    worker_task.cancel()
+    # ── Load analyzers ──
+    logger.info("Loading analyzers …")
 
-app = FastAPI(title="AI-Augmented SOC Detection Engine", lifespan=lifespan)
-
-class LogRequest(BaseModel):
-    log_id: str
-    log_text: str
-    metadata: Optional[Dict] = {}
-
-class DetectionResponse(BaseModel):
-    predicted_label: str  # "Anomaly" or "Benign"
-    confidence_score: float
-    rule_based_alert: bool
-    rule_reason: Optional[str]
-    mitre_technique: Optional[str]
-    mitre_tactic: Optional[str]
-    drift_alert: bool
-    processing_time_ms: float
-
-async def process_queue():
-    """Background worker to process logs from queue (Simulated Streaming)."""
-    while True:
-        try:
-            log_req = await ingestion_queue.get()
-            # In a real streaming scenario, we might batch these or push to a DB
-            logger.info(f"Background processing log: {log_req.log_id}")
-            ingestion_queue.task_done()
-        except asyncio.CancelledError:
-            break
-        except Exception as e:
-            logger.error(f"Error in queue worker: {e}")
-
-@app.post("/detect", response_model=DetectionResponse)
-async def detect_log(request: LogRequest):
-    """
-    Real-time detection endpoint.
-    Combines BERT model + Rule Engine + Drift Detection + MITRE Mapping.
-    """
-    start_time = time.time()
-    
-    # 1. BERT/Hybrid Model Detection
-    model_result = {}
-    if pipeline and pipeline.is_fitted:
-        try:
-            # Running synchronous model in threadpool to not block async loop
-            model_result = await asyncio.to_thread(
-                pipeline.detect, request.log_text, request.metadata
-            )
-        except Exception as e:
-            logger.error(f"Model inference failed: {e}")
-            model_result = {'score': 0.0, 'is_anomaly': False}
+    structured_analyzer = StructuredAnalyzer.load("outputs/checkpoints")
+    if structured_analyzer.is_ready():
+        logger.info("✅ Structured IDS analyzer loaded.")
     else:
-        model_result = {'score': 0.0, 'is_anomaly': False}
+        logger.warning("⚠️  Structured IDS analyzer not available.")
 
-    # 2. Rule Engine
-    rule_result = rule_engine.check_rules(request.log_text, request.metadata)
-    
-    import numpy as np
-    
-    # 3. Drift Detection (Update monitor)
-    embedding_list = model_result.get('embedding', [])
-    drift_alert = False
-    
-    if embedding_list:
-        try:
-            # Flatten if it's a list within a list (e.g. [[...]])
-            embedding_arr = np.array(embedding_list)
-            if embedding_arr.ndim > 1:
-                embedding_arr = embedding_arr.flatten()
-            
-            # Check for drift
-            drift_alert = drift_monitor.add_sample(embedding_arr)
-        except Exception as e:
-            logger.warning(f"Drift detection error: {e}")
-    
-    # 4. MITRE Mapping
-    mitre_info = mitre_mapper.map_alert(
-        rule_id=rule_result.get('rule_id'), 
-        log_text=request.log_text
+    semantic_analyzer = SemanticAnalyzer.load("models/siem_model")
+    if semantic_analyzer.is_ready():
+        logger.info("✅ Semantic analyzer loaded.")
+    else:
+        logger.warning("⚠️  Semantic analyzer not available.")
+
+    # ── Shared services ──
+    rule_engine = RuleEngine()
+    mitre_mapper = MitreMapper()
+    drift_monitor = DriftMonitor()
+
+    input_router = InputRouter(
+        known_feature_columns=structured_analyzer.feature_columns,
     )
-    
-    # Final Decision Logic
-    is_anomaly = model_result.get('is_anomaly', False) or rule_result['rule_based_alert']
-    
-    processing_time = (time.time() - start_time) * 1000
-    
+    alert_builder = AlertBuilder(
+        mitre_mapper=mitre_mapper,
+        rule_engine=rule_engine,
+        drift_monitor=drift_monitor,
+    )
+
+    logger.info("API initialisation complete.")
+    yield
+    logger.info("Shutting down.")
+
+
+# ------------------------------------------------------------------ #
+#  App                                                                 #
+# ------------------------------------------------------------------ #
+
+app = FastAPI(
+    title="AI-Augmented SOC Detection Engine",
+    description=(
+        "Unified detection API combining structured network-flow IDS "
+        "(LightGBM on CIC-IDS2017) and semantic textual log anomaly "
+        "detection (Sentence-BERT + Isolation Forest)."
+    ),
+    version="2.0.0",
+    lifespan=lifespan,
+)
+
+
+# ------------------------------------------------------------------ #
+#  Helper                                                              #
+# ------------------------------------------------------------------ #
+
+async def _run_analysis(
+    request: DetectionRequest,
+    engines: List[AnalysisEngine],
+) -> SOCAlert:
+    """
+    Dispatch *request* to the specified engines, fuse results, and
+    return a ``SOCAlert``.
+    """
+    start = time.time()
+    results: List[AnalysisResult] = []
+
+    # Run engines (potentially in parallel via to_thread)
+    tasks = []
+
+    if AnalysisEngine.STRUCTURED in engines and structured_analyzer and structured_analyzer.is_ready():
+        tasks.append(asyncio.to_thread(structured_analyzer.analyze, request))
+
+    if AnalysisEngine.SEMANTIC in engines and semantic_analyzer and semantic_analyzer.is_ready():
+        tasks.append(asyncio.to_thread(semantic_analyzer.analyze, request))
+
+    if tasks:
+        results = list(await asyncio.gather(*tasks))
+
+    processing_time_ms = (time.time() - start) * 1000
+
+    return alert_builder.build(request, results, processing_time_ms)
+
+
+# ------------------------------------------------------------------ #
+#  Endpoints                                                           #
+# ------------------------------------------------------------------ #
+
+@app.post(
+    "/detect",
+    response_model=SOCAlert,
+    summary="Auto-route detection",
+    description=(
+        "Inspects the request and routes to the appropriate engine(s). "
+        "Send `flow_features` for IDS, `log_text` for semantic analysis, "
+        "or both for dual analysis."
+    ),
+)
+async def detect(request: DetectionRequest):
+    """Auto-routing detection endpoint."""
+    engines = input_router.route(request)
+    return await _run_analysis(request, engines)
+
+
+@app.post(
+    "/detect/flow",
+    response_model=SOCAlert,
+    summary="Structured flow analysis",
+    description="Explicit structured IDS analysis on network-flow features.",
+)
+async def detect_flow(request: DetectionRequest):
+    """Explicit structured-only detection."""
+    if not request.flow_features:
+        raise HTTPException(
+            status_code=422,
+            detail="flow_features required for /detect/flow",
+        )
+    return await _run_analysis(request, [AnalysisEngine.STRUCTURED])
+
+
+@app.post(
+    "/detect/log",
+    response_model=SOCAlert,
+    summary="Semantic log analysis",
+    description="Explicit semantic anomaly detection on free-text log lines.",
+)
+async def detect_log(request: DetectionRequest):
+    """Explicit semantic-only detection."""
+    if not request.log_text:
+        raise HTTPException(
+            status_code=422,
+            detail="log_text required for /detect/log",
+        )
+    return await _run_analysis(request, [AnalysisEngine.SEMANTIC])
+
+
+@app.get("/health", summary="Health check")
+async def health():
+    """Return per-engine health and drift status."""
     return {
-        "predicted_label": "Attack" if is_anomaly else "Benign",
-        "confidence_score": float(model_result.get('score', 0.0)),
-        "rule_based_alert": rule_result['rule_based_alert'],
-        "rule_reason": rule_result['rule_reason'],
-        "mitre_technique": mitre_info['mitre_technique_id'],
-        "mitre_tactic": mitre_info['mitre_tactic'],
-        "drift_alert": drift_alert,  # Placeholder until we integrate embedding extraction
-        "processing_time_ms": processing_time
+        "status": "healthy",
+        "engines": {
+            "structured_ids": (
+                structured_analyzer.health()
+                if structured_analyzer
+                else {"ready": False}
+            ),
+            "semantic_anomaly": (
+                semantic_analyzer.health()
+                if semantic_analyzer
+                else {"ready": False}
+            ),
+        },
+        "drift": (
+            alert_builder.drift_monitor.get_status()
+            if alert_builder
+            else {}
+        ),
+        "version": "2.0.0",
     }
 
-@app.post("/stream/ingest")
-async def ingest_log_stream(request: LogRequest, background_tasks: BackgroundTasks):
-    """
-    Async ingestion for high-throughput streaming.
-    Puts log into queue for background processing.
-    """
-    await ingestion_queue.put(request)
-    return {"status": "queued", "log_id": request.log_id}
-
-@app.get("/health")
-def health_check():
-    return {"status": "healthy", "model_loaded": pipeline.is_fitted if pipeline else False}
