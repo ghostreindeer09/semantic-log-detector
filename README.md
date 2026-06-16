@@ -12,7 +12,7 @@ A modular Security Operations Center (SOC) detection engine combining supervised
 
 ---
 
-## 🚀 Key Capabilities
+##  Key Capabilities
 
 * Hybrid Detection Pipeline
   Combines ML-based classification with anomaly scoring and deterministic rules.
@@ -38,7 +38,7 @@ A modular Security Operations Center (SOC) detection engine combining supervised
 
 ---
 
-## 🏗 System Architecture
+##  System Architecture
 
 ```mermaid
 graph TD
@@ -56,7 +56,7 @@ graph TD
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```
 src/
@@ -73,7 +73,7 @@ scripts/              # Load testing & utilities
 
 ---
 
-## 🛠 Installation & Setup
+##  Installation & Setup
 
 ### Prerequisites
 
@@ -109,7 +109,7 @@ docker-compose up --build -d
 
 ---
 
-## ⚡ Performance
+##  Performance
 
 ### Intrusion Detection (CIC-IDS2017)
 
@@ -130,7 +130,7 @@ Note: Chronological split simulates deployment by training on earlier capture da
 
 ---
 
-## 🛡 Detection Capabilities
+##  Detection Capabilities
 
 | Detection Layer | Technique         | Example                             |
 | --------------- | ----------------- | ----------------------------------- |
@@ -141,7 +141,7 @@ Note: Chronological split simulates deployment by training on earlier capture da
 
 ---
 
-## 📊 Evaluation Philosophy
+##  Evaluation Philosophy
 
 This project emphasizes:
 
@@ -155,7 +155,7 @@ The goal is not just high metrics, but defensible and reproducible evaluation.
 
 ---
 
-## 📈 Running Evaluation
+##  Running Evaluation
 
 Benchmark:
 
@@ -171,7 +171,7 @@ python scripts/load_test.py
 
 ---
 
-## 🗺 Roadmap
+##  Roadmap
 
 * [ ] Cross-dataset validation (UNSW-NB15 / CIC-IDS2018)
 * [ ] Adaptive thresholding under drift
@@ -180,9 +180,10 @@ python scripts/load_test.py
 
 ---
 
-## 👨‍💻 Authors
+##  Authors
 
-Rishit Sharma, Kokkula Srinivas
+Rishit Sharma, 
+Kokkula Srinivas
 Detection Engineering | ML for Cyber Defense
 
 ---
