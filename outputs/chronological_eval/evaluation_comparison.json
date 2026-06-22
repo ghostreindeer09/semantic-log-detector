@@ -1,0 +1,129 @@
+{
+  "strategy_a": "random_split",
+  "strategy_b": "chronological",
+  "binary": {
+    "accuracy": {
+      "random": 0.999104,
+      "chronological": 0.654593,
+      "delta": -0.344511,
+      "pct_change": -34.48
+    },
+    "precision": {
+      "random": 0.994983,
+      "chronological": 0.964146,
+      "delta": -0.030838,
+      "pct_change": -3.1
+    },
+    "recall": {
+      "random": 0.999734,
+      "chronological": 0.028987,
+      "delta": -0.970747,
+      "pct_change": -97.1
+    },
+    "f1_score": {
+      "random": 0.997353,
+      "chronological": 0.056282,
+      "delta": -0.941071,
+      "pct_change": -94.36
+    },
+    "roc_auc": {
+      "random": 0.999983,
+      "chronological": 0.928946,
+      "delta": -0.071037,
+      "pct_change": -7.1
+    },
+    "pr_auc": {
+      "random": 0.999912,
+      "chronological": 0.887528,
+      "delta": -0.112384,
+      "pct_change": -11.24
+    },
+    "false_positive_rate": {
+      "random": 0.001024,
+      "chronological": 0.000594,
+      "delta": -0.00043,
+      "pct_change": -41.98
+    },
+    "false_negative_rate": {
+      "random": 0.000266,
+      "chronological": 0.971013,
+      "delta": 0.970747,
+      "pct_change": 364783.67
+    },
+    "detection_rate": {
+      "random": 0.999734,
+      "chronological": 0.028987,
+      "delta": -0.970747,
+      "pct_change": -97.1
+    }
+  },
+  "multiclass": {
+    "accuracy": {
+      "random": 0.999088,
+      "chronological": 0.644571,
+      "delta": -0.354517
+    },
+    "macro_f1": {
+      "random": 0.950426,
+      "chronological": 0.13413,
+      "delta": -0.816296
+    },
+    "weighted_f1": {
+      "random": 0.999114,
+      "chronological": 0.518822,
+      "delta": -0.480292
+    },
+    "macro_precision": {
+      "random": 0.960049,
+      "chronological": 0.112234,
+      "delta": -0.847815
+    },
+    "macro_recall": {
+      "random": 0.954659,
+      "chronological": 0.16664,
+      "delta": -0.788019
+    }
+  },
+  "per_class_detection": {
+    "BENIGN": {
+      "random": 0.999,
+      "chronological": 0.9998,
+      "delta": 0.0008
+    },
+    "Bot": {
+      "random": 0.9823,
+      "chronological": 0.0,
+      "delta": -0.9823
+    },
+    "Brute Force": {
+      "random": 0.9993,
+      "chronological": null,
+      "delta": null
+    },
+    "DDoS": {
+      "random": 0.9999,
+      "chronological": 0.0,
+      "delta": -0.9999
+    },
+    "DoS": {
+      "random": 0.9996,
+      "chronological": null,
+      "delta": null
+    },
+    "Infiltration": {
+      "random": 0.6667,
+      "chronological": null,
+      "delta": null
+    },
+    "PortScan": {
+      "random": 0.9996,
+      "chronological": 0.0,
+      "delta": -0.9996
+    },
+    "Web Attack": {
+      "random": 0.9908,
+      "chronological": null,
+      "delta": null
+    }
+  }
+}

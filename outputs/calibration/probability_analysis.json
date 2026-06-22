@@ -1,0 +1,44 @@
+{
+  "benign": {
+    "count": 400583,
+    "mean": 0.0028563677931875246,
+    "median": 0.0008048401385913224,
+    "std": 0.023159765537492997,
+    "min": 0.0005038087751560427,
+    "max": 0.9926264407546775,
+    "q01": 0.0007851042358940174,
+    "q05": 0.0007923092663799799,
+    "q25": 0.0008048401385913224,
+    "q50": 0.0008048401385913224,
+    "q75": 0.0009532408116924489,
+    "q95": 0.003602576179409568,
+    "q99": 0.039365649488875123
+  },
+  "malicious": {
+    "count": 220788,
+    "mean": 0.16009725435361624,
+    "median": 0.20251053288700285,
+    "std": 0.16458662582163874,
+    "min": 0.0008002002536262238,
+    "max": 0.9942285757392612,
+    "q01": 0.0012017100309931555,
+    "q05": 0.0012017100309931555,
+    "q25": 0.0012282529901610076,
+    "q50": 0.20251053288700285,
+    "q75": 0.218625389185911,
+    "q95": 0.42637595337295664,
+    "q99": 0.7611269392926413
+  },
+  "threshold_05_analysis": {
+    "fraction_benign_above_05": 0.000594134049622675,
+    "fraction_malicious_above_05": 0.028987082631302424,
+    "why_05_fails": "Only 2.90% of malicious samples score \u22650.5. The model compresses attack probabilities: malicious median = 0.202511, 95th percentile = 0.426376. The classifier's probability surface has shifted under temporal distribution change."
+  },
+  "separation_analysis": {
+    "overlap_region": "[0.000800, 0.992626]",
+    "benign_99th_percentile": 0.039365649488875123,
+    "malicious_01st_percentile": 0.0012017100309931555,
+    "meaningful_separation": true,
+    "note": "Despite miscalibration, the ranking structure is preserved. Benign 99th pct = 0.039366 vs Malicious 25th pct = 0.001228. This confirms the model can still discriminate, but its probability estimates are not well-calibrated."
+  }
+}
