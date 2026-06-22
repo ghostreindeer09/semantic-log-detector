@@ -1,0 +1,51 @@
+{
+  "BENIGN": {
+    "precision": 0.6734043304425607,
+    "recall": 0.9998377364990526,
+    "f1-score": 0.8047790272557666,
+    "support": 400583.0
+  },
+  "Bot": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1-score": 0.0,
+    "support": 1953.0
+  },
+  "Brute Force": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1-score": 0.0,
+    "support": 0.0
+  },
+  "DDoS": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1-score": 0.0,
+    "support": 128016.0
+  },
+  "DoS": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1-score": 0.0,
+    "support": 0.0
+  },
+  "PortScan": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1-score": 0.0,
+    "support": 90819.0
+  },
+  "accuracy": 0.6445714396069337,
+  "macro avg": {
+    "precision": 0.11223405507376011,
+    "recall": 0.1666396227498421,
+    "f1-score": 0.13412983787596108,
+    "support": 621371.0
+  },
+  "weighted avg": {
+    "precision": 0.4341276417819182,
+    "recall": 0.6445714396069337,
+    "f1-score": 0.5188217619991868,
+    "support": 621371.0
+  }
+}
