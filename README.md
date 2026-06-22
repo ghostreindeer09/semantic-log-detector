@@ -1,4 +1,4 @@
-# From 99.97% F1 to Production Failure: An Investigation into Temporal Leakage, Distribution Shift, and Reliability in ML-Based Intrusion Detection
+ An Investigation into Temporal Leakage, Distribution Shift, and Reliability in ML-Based Intrusion Detection
 
 [![Status](https://img.shields.io/badge/status-research--grade-blue)](#)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)](#)
