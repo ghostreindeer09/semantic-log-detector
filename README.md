@@ -29,7 +29,7 @@ The system is designed as a hybrid microservice to ingest log events, extract ne
 - **MITRE ATT&CK Mapping**: Automatically enriches alerts with TTP tagging (e.g., T1110 for Brute Force, T1498 for DoS).
 - **Drift Monitoring**: Uses statistical checks (KS tests and PSI) over feature distributions to flag concept drift.
 
-For details, see the [System Architecture Document](file:///Users/rishitsharma/Downloads/semantic-log-detector/docs/architecture.md).
+For details, see the [System Architecture Document](docs/architecture.md).
 
 ---
 
@@ -60,7 +60,7 @@ The model's development and debugging journey evolved through five distinct eval
 4. **Probability Calibration**: Platt Scaling and Isotonic Regression failed to generalize from Thursday's validation split to Friday's test split due to distribution shift.
 5. **Drift-Aware Adaptive Thresholding**: Quantile-based dynamic thresholds reduced alert volumes by `92.6%` compared to the fixed `0.001` baseline, but recall collapsed to `8.33%` as the model normalized attack traffic as the new baseline.
 
-For the full phase-by-phase breakdown and empirical data, see the [Evaluation Journey Document](file:///Users/rishitsharma/Downloads/semantic-log-detector/docs/evaluation_journey.md).
+For the full phase-by-phase breakdown and empirical data, see the [Evaluation Journey Document](docs/evaluation_journey.md).
 
 ---
 
@@ -71,7 +71,7 @@ For the full phase-by-phase breakdown and empirical data, see the [Evaluation Jo
 - **Calibration fails under distribution shift**: Platt scaling and Isotonic regression do not transfer to new distributions when the validation data itself is shifted.
 - **Adaptive controls can normalize malicious behavior**: Quantile-based threshold adjustments can mistake persistent attack campaigns for normal baseline traffic, adapting *away* from threats.
 
-For deep-dives and design suggestions, see the [Deployment Lessons & Recommendations Document](file:///Users/rishitsharma/Downloads/semantic-log-detector/docs/deployment_lessons.md).
+For deep-dives and design suggestions, see the [Deployment Lessons & Recommendations Document](docs/deployment_lessons.md).
 
 ---
 
