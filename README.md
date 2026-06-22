@@ -8,7 +8,17 @@ This repository serves as a case study and experimental evaluation pipeline for 
 
 ---
 
-## 🎯 Motivation
+##  Key Capabilities
+
+* Hybrid Detection Pipeline
+  Combines ML-based classification with anomaly scoring and deterministic rules.
+
+* Multi-Layer Threat Detection
+
+  * Structured ML model (LightGBM) for flow-based intrusion detection
+  * Sentence-BERT for semantic log understanding
+  * Isolation Forest for anomaly detection
+  * Rule engine for deterministic threat signatures
 
 Traditional ML-based intrusion detection research regularly reports near-perfect metrics (e.g., F1 > 99%) on public datasets. However, when these models are deployed in production, their performance degrades. 
 
@@ -16,24 +26,31 @@ This project demonstrates that **random stratified splits introduce temporal lea
 
 ---
 
-## 🏗 Architecture
+##  System Architecture
+
+```mermaid
+graph TD
+    A[Log Ingestion] -->|Async Queue| B(API Gateway / FastAPI);
+    B --> C{Detection Core};
+    C -->|ML Classifier| D[LightGBM IDS];
+    C -->|Semantic Analysis| E[Sentence-BERT];
+    C -->|Statistical Check| F[Isolation Forest];
+    C -->|Rule Check| G[Rule Engine];
+    D --> H[Threshold Calibration];
+    C --> I[Result Aggregator];
+    I --> J[MITRE Mapper];
+    J --> K[JSON Response];
+```
 
 The system is designed as a hybrid microservice to ingest log events, extract network flow patterns, perform inference, and route alerts.
 
-- **Serving Gateway**: Built with **FastAPI** to support asynchronous, low-latency log stream ingestion.
-- **Hybrid Detection Pipeline**:
-  - **LightGBM Classifier**: Operates on 78 numeric network flow features for high-throughput detection.
-  - **Sentence-BERT**: Performs semantic embedding analysis on unstructured commands and log texts.
-  - **Isolation Forest**: Unsupervised check for volumetric rate anomalies.
-  - **Rule Engine**: Pattern-matching signatures for high-confidence detections.
-- **MITRE ATT&CK Mapping**: Automatically enriches alerts with TTP tagging (e.g., T1110 for Brute Force, T1498 for DoS).
-- **Drift Monitoring**: Uses statistical checks (KS tests and PSI) over feature distributions to flag concept drift.
+##  Project Structure
 
 For details, see the [System Architecture Document](docs/architecture.md).
 
 ---
 
-## 🔬 The Experimental Journey
+##  Installation & Setup
 
 The model's development and debugging journey evolved through five distinct evaluation stages:
 
@@ -60,11 +77,49 @@ The model's development and debugging journey evolved through five distinct eval
 4. **Probability Calibration**: Platt Scaling and Isotonic Regression failed to generalize from Thursday's validation split to Friday's test split due to distribution shift.
 5. **Drift-Aware Adaptive Thresholding**: Quantile-based dynamic thresholds reduced alert volumes by `92.6%` compared to the fixed `0.001` baseline, but recall collapsed to `8.33%` as the model normalized attack traffic as the new baseline.
 
-For the full phase-by-phase breakdown and empirical data, see the [Evaluation Journey Document](docs/evaluation_journey.md).
+### Docker Deployment
+
+```bash
+docker-compose up --build -d
+```
 
 ---
 
-## 💡 Key Findings
+##  Performance
+
+### Intrusion Detection (CIC-IDS2017)
+
+Evaluation performed under two strategies:
+
+| Split Strategy             | ROC-AUC                                        | Detection Rate | False Positive Rate |
+| -------------------------- | ---------------------------------------------- | -------------- | ------------------- |
+| Random Flow-Level          | ~0.999                                         | ~99.98%        | ~0.1%               |
+| Chronological (Time-Based) | Evaluated to measure real-world generalization |                |                     |
+
+Note: Chronological split simulates deployment by training on earlier capture days and testing on future traffic to reduce leakage effects.
+
+### Inference Benchmark
+
+* Single Sample Latency: ~3–5 ms (CPU)
+* Throughput (Batch 32): ~4000 samples/sec
+* Async API Throughput: ~200+ logs/sec per worker
+
+---
+
+##  Detection Capabilities
+
+| Detection Layer | Technique         | Example                             |
+| --------------- | ----------------- | ----------------------------------- |
+| Flow-Based IDS  | LightGBM          | DDoS, DoS, PortScan, Brute Force    |
+| Semantic        | Sentence-BERT     | Suspicious command patterns in logs |
+| Statistical     | Isolation Forest  | Traffic volume anomalies            |
+| Rule-Based      | Threshold/Pattern | 5 failed logins in 10s              |
+
+---
+
+##  Evaluation Philosophy
+
+This project emphasizes:
 
 - **Random splits overestimate performance**: Same-burst and same-session traffic leakage inflates offline performance.
 - **High ROC-AUC does not guarantee a usable threshold**: The model ranks attack flows above benign ones (ROC-AUC = 0.93), but prediction probabilities are compressed near zero, rendering the default 0.5 threshold ineffective.
@@ -75,7 +130,7 @@ For deep-dives and design suggestions, see the [Deployment Lessons & Recommendat
 
 ---
 
-## ⚙️ Reproducibility
+##  Running Evaluation
 
 Execute the following commands to reproduce each stage of the validation pipeline:
 
@@ -93,16 +148,19 @@ python scripts/run_calibration_study.py
 ```
 *Outputs generated under `outputs/calibration/` and `outputs/reports/calibration_study.md`.*
 
-### 3. Adaptive Thresholding Study
-Simulate streaming evaluation on Friday's test set using quantile and drift-triggered threshold controllers:
-```bash
-python scripts/run_adaptive_threshold_study.py
-```
-*Outputs generated under `outputs/adaptive_threshold/` and `outputs/reports/adaptive_threshold_design.md`.*
+---
+
+##  Roadmap
+
+* [ ] Cross-dataset validation (UNSW-NB15 / CIC-IDS2018)
+* [ ] Adaptive thresholding under drift
+* [ ] Online learning module
+* [ ] Entity graph anomaly detection
 
 ---
 
-## 👨‍💻 Authors
+##  Authors
 
-**Rishit Sharma, Kokkula Srinivas**  
+Rishit Sharma, 
+Kokkula Srinivas
 Detection Engineering | ML for Cyber Defense
