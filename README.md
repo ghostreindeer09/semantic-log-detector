@@ -1,189 +1,108 @@
+# From 99.97% F1 to Production Failure: An Investigation into Temporal Leakage, Distribution Shift, and Reliability in ML-Based Intrusion Detection
 
+[![Status](https://img.shields.io/badge/status-research--grade-blue)](#)
+[![Python](https://img.shields.io/badge/python-3.8%2B-blue)](#)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.95%2B-teal)](#)
 
----
-
-# AI-Augmented SOC Detection Engine
-
-![Status](https://img.shields.io/badge/status-research--grade-blue)
-![Python](https://img.shields.io/badge/python-3.8%2B-blue)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.95%2B-teal)
-
-A modular Security Operations Center (SOC) detection engine combining supervised machine learning, anomaly detection, and rule-based logic to detect cyber threats in real-time. The system is designed with evaluation rigor, temporal validation, and deployment constraints in mind.
+This repository serves as a case study and experimental evaluation pipeline for machine learning (ML) models in intrusion detection systems (IDS). It documents the investigation of a flow-based LightGBM intrusion detector from initial laboratory training to its failure modes under temporal distribution shifts.
 
 ---
 
-## 🚀 Key Capabilities
+## 🎯 Motivation
 
-* Hybrid Detection Pipeline
-  Combines ML-based classification with anomaly scoring and deterministic rules.
+Traditional ML-based intrusion detection research regularly reports near-perfect metrics (e.g., F1 > 99%) on public datasets. However, when these models are deployed in production, their performance degrades. 
 
-* Multi-Layer Threat Detection
-
-  * Structured ML model (LightGBM) for flow-based intrusion detection
-  * Sentence-BERT for semantic log understanding
-  * Isolation Forest for anomaly detection
-  * Rule engine for deterministic threat signatures
-
-* MITRE ATT&CK Mapping
-  Automatically maps detections to TTPs (e.g., T1110 – Brute Force).
-
-* Temporal Evaluation Framework
-  Supports both random and chronological data splits to measure generalization under distribution shift.
-
-* Drift Monitoring
-  Monitors embedding and feature drift to detect changes in traffic behavior.
-
-* Production-Oriented Design
-  Async FastAPI microservice, structured logging, Dockerized deployment.
+This project demonstrates that **random stratified splits introduce temporal leakage**, allowing models to memorize specific attack session profiles rather than learning generalizable detection signatures. By reorganizing the evaluation chronologically and analyzing probability calibration, we show why standard decision boundaries fail in deployment and investigate why naive online adaptive controls can adapt to attackers rather than normal traffic.
 
 ---
 
-## 🏗 System Architecture
+## 🏗 Architecture
 
-```mermaid
-graph TD
-    A[Log Ingestion] -->|Async Queue| B(API Gateway / FastAPI);
-    B --> C{Detection Core};
-    C -->|ML Classifier| D[LightGBM IDS];
-    C -->|Semantic Analysis| E[Sentence-BERT];
-    C -->|Statistical Check| F[Isolation Forest];
-    C -->|Rule Check| G[Rule Engine];
-    D --> H[Threshold Calibration];
-    C --> I[Result Aggregator];
-    I --> J[MITRE Mapper];
-    J --> K[JSON Response];
-```
+The system is designed as a hybrid microservice to ingest log events, extract network flow patterns, perform inference, and route alerts.
+
+- **Serving Gateway**: Built with **FastAPI** to support asynchronous, low-latency log stream ingestion.
+- **Hybrid Detection Pipeline**:
+  - **LightGBM Classifier**: Operates on 78 numeric network flow features for high-throughput detection.
+  - **Sentence-BERT**: Performs semantic embedding analysis on unstructured commands and log texts.
+  - **Isolation Forest**: Unsupervised check for volumetric rate anomalies.
+  - **Rule Engine**: Pattern-matching signatures for high-confidence detections.
+- **MITRE ATT&CK Mapping**: Automatically enriches alerts with TTP tagging (e.g., T1110 for Brute Force, T1498 for DoS).
+- **Drift Monitoring**: Uses statistical checks (KS tests and PSI) over feature distributions to flag concept drift.
+
+For details, see the [System Architecture Document](file:///Users/rishitsharma/Downloads/semantic-log-detector/docs/architecture.md).
 
 ---
 
-## 📂 Project Structure
+## 🔬 The Experimental Journey
+
+The model's development and debugging journey evolved through five distinct evaluation stages:
 
 ```
-src/
-├── api/              # FastAPI application & endpoints
-├── models/           # LightGBM IDS, BERT, Isolation Forest
-├── detection/        # Core detection orchestration
-├── rules/            # Rule-based detection logic
-├── mitre/            # MITRE ATT&CK mapping
-├── monitoring/       # Drift detection & calibration
-├── evaluation/       # Benchmarking & temporal validation
-└── utils/            # Preprocessing & helpers
-scripts/              # Load testing & utilities
+ Random Evaluation (Stage 1)
+   │   F1 = 0.9974, ROC-AUC = 0.99998 (Illusory production readiness)
+   ▼
+ Chronological Validation (Stage 2)
+   │   F1 = 0.0563, Recall = 2.90% at default threshold 0.5
+   ▼
+ Threshold Tuning (Stage 3)
+   │   Threshold 0.0012 recovers Recall to 99.56% but at 17.64% FPR
+   ▼
+ Probability Calibration (Stage 4)
+   │   Platt & Isotonic calibrators fail due to validation-test shift
+   ▼
+ Adaptive Thresholding (Stage 5)
+       Alert volume reduced by 92.6%, but recall collapses to 8.33%
 ```
+
+1. **Random Evaluation**: A stratified 70/15/15 split of the cleaned CIC-IDS2017 dataset produced an F1 score of `0.9974` and an ROC-AUC of `0.99998`.
+2. **Chronological Validation**: Evaluating the model temporally (training on Monday–Wednesday, validating on Thursday, and testing on Friday) caused recall to collapse to `2.90%` at the default threshold (0.5), as the model encountered unseen attack categories.
+3. **Threshold Study**: Swapping to Youden's J optimal threshold of `0.0012` recovered recall to `99.56%` at the cost of a `17.64%` False Positive Rate.
+4. **Probability Calibration**: Platt Scaling and Isotonic Regression failed to generalize from Thursday's validation split to Friday's test split due to distribution shift.
+5. **Drift-Aware Adaptive Thresholding**: Quantile-based dynamic thresholds reduced alert volumes by `92.6%` compared to the fixed `0.001` baseline, but recall collapsed to `8.33%` as the model normalized attack traffic as the new baseline.
+
+For the full phase-by-phase breakdown and empirical data, see the [Evaluation Journey Document](file:///Users/rishitsharma/Downloads/semantic-log-detector/docs/evaluation_journey.md).
 
 ---
 
-## 🛠 Installation & Setup
+## 💡 Key Findings
 
-### Prerequisites
+- **Random splits overestimate performance**: Same-burst and same-session traffic leakage inflates offline performance.
+- **High ROC-AUC does not guarantee a usable threshold**: The model ranks attack flows above benign ones (ROC-AUC = 0.93), but prediction probabilities are compressed near zero, rendering the default 0.5 threshold ineffective.
+- **Calibration fails under distribution shift**: Platt scaling and Isotonic regression do not transfer to new distributions when the validation data itself is shifted.
+- **Adaptive controls can normalize malicious behavior**: Quantile-based threshold adjustments can mistake persistent attack campaigns for normal baseline traffic, adapting *away* from threats.
 
-* Python 3.8+
-* Docker (optional)
+For deep-dives and design suggestions, see the [Deployment Lessons & Recommendations Document](file:///Users/rishitsharma/Downloads/semantic-log-detector/docs/deployment_lessons.md).
 
-### Local Setup
+---
 
-1. Clone the repository
-2. Install dependencies:
+## ⚙️ Reproducibility
 
+Execute the following commands to reproduce each stage of the validation pipeline:
+
+### 1. Chronological Split Validation
+Train the LightGBM classifier on Mon–Wed, validate on Thu, and evaluate on Fri:
 ```bash
-pip install -r requirements.txt
+python scripts/run_chronological_validation.py
 ```
+*Outputs generated under `outputs/chronological_eval/` and `outputs/reports/chronological_threshold_report.md`.*
 
-3. Train the model:
-
+### 2. Probability Calibration Study
+Sweep decision thresholds and train Platt and Isotonic calibrators on validation data:
 ```bash
-python train_siem.py
+python scripts/run_calibration_study.py
 ```
+*Outputs generated under `outputs/calibration/` and `outputs/reports/calibration_study.md`.*
 
-4. Start the API:
-
+### 3. Adaptive Thresholding Study
+Simulate streaming evaluation on Friday's test set using quantile and drift-triggered threshold controllers:
 ```bash
-uvicorn src.api.main:app --reload
+python scripts/run_adaptive_threshold_study.py
 ```
-
-### Docker Deployment
-
-```bash
-docker-compose up --build -d
-```
-
----
-
-## ⚡ Performance
-
-### Intrusion Detection (CIC-IDS2017)
-
-Evaluation performed under two strategies:
-
-| Split Strategy             | ROC-AUC                                        | Detection Rate | False Positive Rate |
-| -------------------------- | ---------------------------------------------- | -------------- | ------------------- |
-| Random Flow-Level          | ~0.999                                         | ~99.98%        | ~0.1%               |
-| Chronological (Time-Based) | Evaluated to measure real-world generalization |                |                     |
-
-Note: Chronological split simulates deployment by training on earlier capture days and testing on future traffic to reduce leakage effects.
-
-### Inference Benchmark
-
-* Single Sample Latency: ~3–5 ms (CPU)
-* Throughput (Batch 32): ~4000 samples/sec
-* Async API Throughput: ~200+ logs/sec per worker
-
----
-
-## 🛡 Detection Capabilities
-
-| Detection Layer | Technique         | Example                             |
-| --------------- | ----------------- | ----------------------------------- |
-| Flow-Based IDS  | LightGBM          | DDoS, DoS, PortScan, Brute Force    |
-| Semantic        | Sentence-BERT     | Suspicious command patterns in logs |
-| Statistical     | Isolation Forest  | Traffic volume anomalies            |
-| Rule-Based      | Threshold/Pattern | 5 failed logins in 10s              |
-
----
-
-## 📊 Evaluation Philosophy
-
-This project emphasizes:
-
-* Impact of data splitting strategy on IDS performance
-* Performance inflation under naive random splits
-* Temporal validation to approximate deployment behavior
-* Threshold calibration (Youden-J vs Max-F1)
-* Per-class detection analysis for rare attacks
-
-The goal is not just high metrics, but defensible and reproducible evaluation.
-
----
-
-## 📈 Running Evaluation
-
-Benchmark:
-
-```bash
-python src/evaluation/benchmark.py
-```
-
-Load test:
-
-```bash
-python scripts/load_test.py
-```
-
----
-
-## 🗺 Roadmap
-
-* [ ] Cross-dataset validation (UNSW-NB15 / CIC-IDS2018)
-* [ ] Adaptive thresholding under drift
-* [ ] Online learning module
-* [ ] Entity graph anomaly detection
+*Outputs generated under `outputs/adaptive_threshold/` and `outputs/reports/adaptive_threshold_design.md`.*
 
 ---
 
 ## 👨‍💻 Authors
 
-Rishit Sharma, Kokkula Srinivas
+**Rishit Sharma, Kokkula Srinivas**  
 Detection Engineering | ML for Cyber Defense
-
----
-
