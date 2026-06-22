@@ -1,0 +1,456 @@
+{
+  "Fixed_0.5": {
+    "config": "Fixed_0.5",
+    "accuracy": 0.654593,
+    "precision": 0.964146,
+    "recall": 0.028987,
+    "f1": 0.056282,
+    "fpr": 0.000594,
+    "fnr": 0.971013,
+    "tp": 6400,
+    "tn": 400345,
+    "fp": 238,
+    "fn": 214388,
+    "total_alerts": 6638,
+    "alert_rate": 0.010683,
+    "total_samples": 621371,
+    "threshold_mean": 0.5,
+    "threshold_std": 0.0,
+    "detection_delays": [
+      {
+        "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+        "attack_types": [
+          "DDoS"
+        ],
+        "n_attacks": 128016,
+        "ttfd_samples": 205,
+        "campaign_recall": 0.047252,
+        "campaign_tp": 6049
+      },
+      {
+        "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+        "attack_types": [
+          "PortScan"
+        ],
+        "n_attacks": 90819,
+        "ttfd_samples": 4,
+        "campaign_recall": 0.003865,
+        "campaign_tp": 351
+      },
+      {
+        "source_file": "Friday-WorkingHours-Morning.pcap_ISCX.csv",
+        "attack_types": [
+          "Bot"
+        ],
+        "n_attacks": 1953,
+        "ttfd_samples": null,
+        "campaign_recall": 0.0,
+        "campaign_tp": 0
+      }
+    ]
+  },
+  "Fixed_0.001": {
+    "config": "Fixed_0.001",
+    "accuracy": 0.850065,
+    "precision": 0.704207,
+    "recall": 0.996676,
+    "f1": 0.825296,
+    "fpr": 0.230741,
+    "fnr": 0.003324,
+    "tp": 220054,
+    "tn": 308152,
+    "fp": 92431,
+    "fn": 734,
+    "total_alerts": 312485,
+    "alert_rate": 0.502896,
+    "total_samples": 621371,
+    "threshold_mean": 0.001,
+    "threshold_std": 0.0,
+    "detection_delays": [
+      {
+        "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+        "attack_types": [
+          "DDoS"
+        ],
+        "n_attacks": 128016,
+        "ttfd_samples": 0,
+        "campaign_recall": 0.999977,
+        "campaign_tp": 128013
+      },
+      {
+        "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+        "attack_types": [
+          "PortScan"
+        ],
+        "n_attacks": 90819,
+        "ttfd_samples": 0,
+        "campaign_recall": 0.999989,
+        "campaign_tp": 90818
+      },
+      {
+        "source_file": "Friday-WorkingHours-Morning.pcap_ISCX.csv",
+        "attack_types": [
+          "Bot"
+        ],
+        "n_attacks": 1953,
+        "ttfd_samples": 0,
+        "campaign_recall": 0.626216,
+        "campaign_tp": 1223
+      }
+    ]
+  },
+  "Q99_W5K": {
+    "config": "Q99_W5K",
+    "accuracy": 0.666806,
+    "precision": 0.798532,
+    "recall": 0.083297,
+    "f1": 0.150858,
+    "fpr": 0.011583,
+    "fnr": 0.916703,
+    "tp": 18391,
+    "tn": 395943,
+    "fp": 4640,
+    "fn": 202397,
+    "total_alerts": 23031,
+    "alert_rate": 0.037065,
+    "total_samples": 621371,
+    "threshold_mean": 0.170765,
+    "threshold_std": 0.196684,
+    "threshold_min": 0.001,
+    "threshold_max": 0.5,
+    "threshold_changes_gt_1pct": 159,
+    "steps_frozen": 77186,
+    "pct_frozen": 12.42,
+    "recall_during_freeze": 0.214057,
+    "recall_during_unfrozen": 0.031287,
+    "drift_events": 0,
+    "freeze_events": 14,
+    "detection_delays": [
+      {
+        "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+        "attack_types": [
+          "DDoS"
+        ],
+        "n_attacks": 128016,
+        "ttfd_samples": 0,
+        "campaign_recall": 0.131523,
+        "campaign_tp": 16837
+      },
+      {
+        "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+        "attack_types": [
+          "PortScan"
+        ],
+        "n_attacks": 90819,
+        "ttfd_samples": 4,
+        "campaign_recall": 0.017111,
+        "campaign_tp": 1554
+      },
+      {
+        "source_file": "Friday-WorkingHours-Morning.pcap_ISCX.csv",
+        "attack_types": [
+          "Bot"
+        ],
+        "n_attacks": 1953,
+        "ttfd_samples": null,
+        "campaign_recall": 0.0,
+        "campaign_tp": 0
+      }
+    ]
+  },
+  "Q995_W5K": {
+    "config": "Q995_W5K",
+    "accuracy": 0.655048,
+    "precision": 0.765205,
+    "recall": 0.042113,
+    "f1": 0.079832,
+    "fpr": 0.007122,
+    "fnr": 0.957887,
+    "tp": 9298,
+    "tn": 397730,
+    "fp": 2853,
+    "fn": 211490,
+    "total_alerts": 12151,
+    "alert_rate": 0.019555,
+    "total_samples": 621371,
+    "threshold_mean": 0.223537,
+    "threshold_std": 0.198055,
+    "threshold_min": 0.001,
+    "threshold_max": 0.5,
+    "threshold_changes_gt_1pct": 678,
+    "steps_frozen": 64486,
+    "pct_frozen": 10.38,
+    "recall_during_freeze": 0.088765,
+    "recall_during_unfrozen": 0.027748,
+    "drift_events": 0,
+    "freeze_events": 12,
+    "detection_delays": [
+      {
+        "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+        "attack_types": [
+          "DDoS"
+        ],
+        "n_attacks": 128016,
+        "ttfd_samples": 0,
+        "campaign_recall": 0.06564,
+        "campaign_tp": 8403
+      },
+      {
+        "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+        "attack_types": [
+          "PortScan"
+        ],
+        "n_attacks": 90819,
+        "ttfd_samples": 4,
+        "campaign_recall": 0.009855,
+        "campaign_tp": 895
+      },
+      {
+        "source_file": "Friday-WorkingHours-Morning.pcap_ISCX.csv",
+        "attack_types": [
+          "Bot"
+        ],
+        "n_attacks": 1953,
+        "ttfd_samples": null,
+        "campaign_recall": 0.0,
+        "campaign_tp": 0
+      }
+    ]
+  },
+  "Q999_W5K": {
+    "config": "Q999_W5K",
+    "accuracy": 0.652852,
+    "precision": 0.822663,
+    "recall": 0.029331,
+    "f1": 0.056643,
+    "fpr": 0.003485,
+    "fnr": 0.970669,
+    "tp": 6476,
+    "tn": 399187,
+    "fp": 1396,
+    "fn": 214312,
+    "total_alerts": 7872,
+    "alert_rate": 0.012669,
+    "total_samples": 621371,
+    "threshold_mean": 0.362099,
+    "threshold_std": 0.158926,
+    "threshold_min": 0.001,
+    "threshold_max": 0.5,
+    "threshold_changes_gt_1pct": 751,
+    "steps_frozen": 55000,
+    "pct_frozen": 8.85,
+    "recall_during_freeze": 0.042559,
+    "recall_during_unfrozen": 0.026188,
+    "drift_events": 0,
+    "freeze_events": 11,
+    "detection_delays": [
+      {
+        "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+        "attack_types": [
+          "DDoS"
+        ],
+        "n_attacks": 128016,
+        "ttfd_samples": 17,
+        "campaign_recall": 0.047307,
+        "campaign_tp": 6056
+      },
+      {
+        "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+        "attack_types": [
+          "PortScan"
+        ],
+        "n_attacks": 90819,
+        "ttfd_samples": 4,
+        "campaign_recall": 0.004625,
+        "campaign_tp": 420
+      },
+      {
+        "source_file": "Friday-WorkingHours-Morning.pcap_ISCX.csv",
+        "attack_types": [
+          "Bot"
+        ],
+        "n_attacks": 1953,
+        "ttfd_samples": null,
+        "campaign_recall": 0.0,
+        "campaign_tp": 0
+      }
+    ]
+  },
+  "Q995_W1K": {
+    "config": "Q995_W1K",
+    "accuracy": 0.657702,
+    "precision": 0.75949,
+    "recall": 0.053649,
+    "f1": 0.100218,
+    "fpr": 0.009364,
+    "fnr": 0.946351,
+    "tp": 11845,
+    "tn": 396832,
+    "fp": 3751,
+    "fn": 208943,
+    "total_alerts": 15596,
+    "alert_rate": 0.025099,
+    "total_samples": 621371,
+    "threshold_mean": 0.188286,
+    "threshold_std": 0.195433,
+    "threshold_min": 0.001,
+    "threshold_max": 0.5,
+    "threshold_changes_gt_1pct": 3379,
+    "steps_frozen": 81622,
+    "pct_frozen": 13.14,
+    "recall_during_freeze": 0.109613,
+    "recall_during_unfrozen": 0.029751,
+    "drift_events": 0,
+    "freeze_events": 16,
+    "detection_delays": [
+      {
+        "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+        "attack_types": [
+          "DDoS"
+        ],
+        "n_attacks": 128016,
+        "ttfd_samples": 0,
+        "campaign_recall": 0.086567,
+        "campaign_tp": 11082
+      },
+      {
+        "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+        "attack_types": [
+          "PortScan"
+        ],
+        "n_attacks": 90819,
+        "ttfd_samples": 0,
+        "campaign_recall": 0.008401,
+        "campaign_tp": 763
+      },
+      {
+        "source_file": "Friday-WorkingHours-Morning.pcap_ISCX.csv",
+        "attack_types": [
+          "Bot"
+        ],
+        "n_attacks": 1953,
+        "ttfd_samples": null,
+        "campaign_recall": 0.0,
+        "campaign_tp": 0
+      }
+    ]
+  },
+  "Q995_W10K": {
+    "config": "Q995_W10K",
+    "accuracy": 0.663349,
+    "precision": 0.836455,
+    "recall": 0.065325,
+    "f1": 0.121186,
+    "fpr": 0.00704,
+    "fnr": 0.934675,
+    "tp": 14423,
+    "tn": 397763,
+    "fp": 2820,
+    "fn": 206365,
+    "total_alerts": 17243,
+    "alert_rate": 0.02775,
+    "total_samples": 621371,
+    "threshold_mean": 0.231751,
+    "threshold_std": 0.193759,
+    "threshold_min": 0.001,
+    "threshold_max": 0.5,
+    "threshold_changes_gt_1pct": 136,
+    "steps_frozen": 72184,
+    "pct_frozen": 11.62,
+    "recall_during_freeze": 0.181628,
+    "recall_during_unfrozen": 0.028584,
+    "drift_events": 0,
+    "freeze_events": 13,
+    "detection_delays": [
+      {
+        "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+        "attack_types": [
+          "DDoS"
+        ],
+        "n_attacks": 128016,
+        "ttfd_samples": 0,
+        "campaign_recall": 0.104948,
+        "campaign_tp": 13435
+      },
+      {
+        "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+        "attack_types": [
+          "PortScan"
+        ],
+        "n_attacks": 90819,
+        "ttfd_samples": 4,
+        "campaign_recall": 0.010879,
+        "campaign_tp": 988
+      },
+      {
+        "source_file": "Friday-WorkingHours-Morning.pcap_ISCX.csv",
+        "attack_types": [
+          "Bot"
+        ],
+        "n_attacks": 1953,
+        "ttfd_samples": null,
+        "campaign_recall": 0.0,
+        "campaign_tp": 0
+      }
+    ]
+  },
+  "Drift_Q995": {
+    "config": "Drift_Q995",
+    "accuracy": 0.655048,
+    "precision": 0.765205,
+    "recall": 0.042113,
+    "f1": 0.079832,
+    "fpr": 0.007122,
+    "fnr": 0.957887,
+    "tp": 9298,
+    "tn": 397730,
+    "fp": 2853,
+    "fn": 211490,
+    "total_alerts": 12151,
+    "alert_rate": 0.019555,
+    "total_samples": 621371,
+    "threshold_mean": 0.223537,
+    "threshold_std": 0.198055,
+    "threshold_min": 0.001,
+    "threshold_max": 0.5,
+    "threshold_changes_gt_1pct": 678,
+    "steps_frozen": 64486,
+    "pct_frozen": 10.38,
+    "recall_during_freeze": 0.088765,
+    "recall_during_unfrozen": 0.027748,
+    "drift_events": 134,
+    "freeze_events": 12,
+    "detection_delays": [
+      {
+        "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+        "attack_types": [
+          "DDoS"
+        ],
+        "n_attacks": 128016,
+        "ttfd_samples": 0,
+        "campaign_recall": 0.06564,
+        "campaign_tp": 8403
+      },
+      {
+        "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+        "attack_types": [
+          "PortScan"
+        ],
+        "n_attacks": 90819,
+        "ttfd_samples": 4,
+        "campaign_recall": 0.009855,
+        "campaign_tp": 895
+      },
+      {
+        "source_file": "Friday-WorkingHours-Morning.pcap_ISCX.csv",
+        "attack_types": [
+          "Bot"
+        ],
+        "n_attacks": 1953,
+        "ttfd_samples": null,
+        "campaign_recall": 0.0,
+        "campaign_tp": 0
+      }
+    ]
+  }
+}
